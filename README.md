@@ -1,5 +1,7 @@
 # Termini
 
+Produkcija: https://termini-one.vercel.app
+
 Multitenant platforma za online zakazivanje termina kod frizera, brijačnica,
 kozmetičara i stomatologa, s potvrdama i podsjetnicima na **WhatsApp** i **SMS**.
 
