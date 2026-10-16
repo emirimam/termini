@@ -90,7 +90,7 @@ export function ManageAppointment({ token, justBooked, status, canChange, cancel
         <div className="p-6">
           <p className="text-sm text-muted">{tenant.name}</p>
           <p className="mt-1 text-lg font-semibold">{info.service}</p>
-          <p className="mt-4 text-sm capitalize text-muted">{info.day}</p>
+          <p className="mt-4 text-sm text-muted first-letter:uppercase">{info.day}</p>
           <p
             className={cx(
               "font-display tabular mt-1 inline-block rounded-xl px-3 py-1 text-5xl font-bold",

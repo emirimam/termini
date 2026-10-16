@@ -103,11 +103,11 @@ export function DayCalendar(props: Props) {
       {/* Zaglavlje */}
       <header className="flex flex-wrap items-center gap-3 border-b border-line bg-surface px-4 py-3 md:px-6">
         <div className="mr-auto min-w-0">
-          <h1 className="font-display truncate text-xl font-bold capitalize md:text-2xl">
+          <h1 className="font-display truncate text-xl font-bold first-letter:uppercase md:text-2xl">
             {date === today ? "Danas" : date === addDays(today, 1) ? "Sutra" : formatDayLong(date)}
           </h1>
-          <p className="text-sm text-muted">
-            {date === today || date === addDays(today, 1) ? <span className="capitalize">{formatDayLong(date)} · </span> : null}
+          <p className="text-sm text-muted first-letter:uppercase">
+            {date === today || date === addDays(today, 1) ? <span>{formatDayLong(date)} · </span> : null}
             {active.length === 0
               ? "Nema termina"
               : `${active.length} ${active.length % 10 === 1 && active.length % 100 !== 11 ? "termin" : "termina"}`}
@@ -388,7 +388,7 @@ function AppointmentDialog({
 
           <dl className="grid grid-cols-[6rem_1fr] gap-y-2 text-sm">
             <dt className="text-muted">Termin</dt>
-            <dd className="font-medium capitalize">
+            <dd className="font-medium first-letter:uppercase">
               {formatDayLong(localDate(a.starts_at, timezone))}{" "}
               u <span className="tabular">{localTime(a.starts_at, timezone)}–{localTime(a.ends_at, timezone)}</span>
             </dd>

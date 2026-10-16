@@ -177,7 +177,7 @@ export function BookingFlow({ slug, tenantName, timezone, services, staff, links
               <div className="min-w-0">
                 <p className="text-sm text-muted">{tenantName}</p>
                 <p className="mt-0.5 truncate font-semibold">{service.name}</p>
-                <p className="text-sm capitalize text-muted">{formatDayLong(localDate(slot.startsAt, timezone))}</p>
+                <p className="text-sm text-muted first-letter:uppercase">{formatDayLong(localDate(slot.startsAt, timezone))}</p>
               </div>
               <p className="font-display tabular shrink-0 rounded-xl bg-stub px-3 py-1 text-4xl font-bold text-stub-ink">
                 {slot.time}
@@ -347,8 +347,8 @@ function StaffOption({
       className="flex items-center gap-3 rounded-xl border border-line p-3 text-left transition-colors hover:border-ink"
     >
       <span
-        className="font-display grid size-10 shrink-0 place-items-center rounded-full text-sm font-bold text-white"
-        style={{ background: color ?? "var(--ink)" }}
+        className={cx("font-display grid size-10 shrink-0 place-items-center rounded-full text-sm font-bold", color ? "text-white" : "bg-ink text-paper")}
+        style={color ? { background: color } : undefined}
       >
         {children}
       </span>

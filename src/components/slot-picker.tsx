@@ -149,7 +149,7 @@ export function SlotPicker({ loadDays, loadSlots, value, onChange }: Props) {
 
       {date && (
         <div className="mt-6" aria-live="polite">
-          <p className="mb-3 font-semibold capitalize">{formatDayLong(date)}</p>
+          <p className="mb-3 font-semibold first-letter:uppercase">{formatDayLong(date)}</p>
           {loadingSlots && !slots ? (
             <div className="grid grid-cols-4 gap-2">
               {Array.from({ length: 8 }, (_, i) => (

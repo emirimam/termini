@@ -36,7 +36,7 @@ async function TenantBooking({ params }: Props) {
   return (
     <main
       className="mx-auto w-full max-w-xl px-4 pb-28 pt-8 sm:pt-12"
-      style={{ ["--brand" as string]: tenant.brand_color }}
+      style={{ ["--brand" as string]: tenant.brand_color, ["--brand-ink" as string]: "#ffffff" }}
     >
       <header className="mb-8 flex items-start gap-4">
         <div

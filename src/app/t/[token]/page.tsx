@@ -36,7 +36,7 @@ async function TokenPage({ params, searchParams }: Props) {
   return (
     <main
       className="mx-auto w-full max-w-md px-4 pb-16 pt-10 sm:pt-16"
-      style={{ ["--brand" as string]: a.tenant.brand_color }}
+      style={{ ["--brand" as string]: a.tenant.brand_color, ["--brand-ink" as string]: "#ffffff" }}
     >
       <ManageAppointment
         token={token}
