@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { adminClient } from "@/lib/supabase/admin";
 import { computeSlots, type Slot } from "@/lib/availability";
@@ -16,9 +17,20 @@ export interface Catalog {
   links: { staff_id: string; service_id: string }[];
 }
 
-export async function getTenantBySlug(slug: string): Promise<Tenant | null> {
+// cache(): metadata, OG slika i stranica dijele isti upit u jednom zahtjevu.
+export const getTenantBySlug = cache(async (slug: string): Promise<Tenant | null> => {
+  if (!/^[a-z0-9-]{2,40}$/i.test(slug)) return null;
   const { data } = await adminClient().from("tenants").select("*").eq("slug", slug.toLowerCase()).maybeSingle();
   return (data as Tenant) ?? null;
+});
+
+export async function getWorkingHours(tenantId: string): Promise<WorkingHours[]> {
+  const { data } = await adminClient()
+    .from("working_hours")
+    .select("*, staff!inner(active)")
+    .eq("tenant_id", tenantId)
+    .eq("staff.active", true);
+  return (data ?? []) as unknown as WorkingHours[];
 }
 
 export async function getCatalog(tenant: Tenant, db: SupabaseClient = adminClient()): Promise<Catalog> {

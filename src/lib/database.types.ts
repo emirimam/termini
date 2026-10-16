@@ -235,6 +235,12 @@ export type Database = {
           { foreignKeyName: "staff_services_tenant_id_fkey"; columns: ["tenant_id"]; isOneToOne: false; referencedRelation: "tenants"; referencedColumns: ["id"] },
         ];
       };
+      platform_admins: {
+        Row: { email: string; created_at: string };
+        Insert: { email: string; created_at?: string };
+        Update: { email?: string; created_at?: string };
+        Relationships: [];
+      };
       tenant_members: {
         Row: { created_at: string; role: string; tenant_id: string; user_id: string };
         Insert: { created_at?: string; role?: string; tenant_id: string; user_id: string };
@@ -267,6 +273,8 @@ export type Database = {
           send_confirmation: boolean;
           slot_step_minutes: number;
           slug: string;
+          suspended: boolean;
+          suspended_reason: string | null;
           timezone: string;
         };
         Insert: {
@@ -292,6 +300,8 @@ export type Database = {
           send_confirmation?: boolean;
           slot_step_minutes?: number;
           slug: string;
+          suspended?: boolean;
+          suspended_reason?: string | null;
           timezone?: string;
         };
         Update: Partial<Database["public"]["Tables"]["tenants"]["Insert"]>;
@@ -356,6 +366,22 @@ export type Database = {
         Returns: string;
       };
       is_admin: { Args: { t: string }; Returns: boolean };
+      platform_tenant_stats: {
+        Args: never;
+        Returns: {
+          tenant_id: string;
+          appointments_total: number;
+          appointments_30d: number;
+          upcoming: number;
+          no_shows_30d: number;
+          clients: number;
+          staff: number;
+          wa_month: number;
+          sms_month: number;
+          failed_month: number;
+          last_booking_at: string | null;
+        }[];
+      };
       is_member: { Args: { t: string }; Returns: boolean };
       requeue_stuck_jobs: { Args: never; Returns: number };
     };

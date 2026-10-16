@@ -53,6 +53,9 @@ async function processJob(job: ReminderJob) {
   if (job.kind === "reminder" && new Date(a.starts_at).getTime() <= Date.now()) {
     return finish(job, { status: "skipped", last_error: "Termin je već počeo" });
   }
+  if (a.tenant.suspended) {
+    return finish(job, { status: "skipped", last_error: "Salon je suspendovan" });
+  }
   if (a.tenant.reminder_channel === "off") {
     return finish(job, { status: "skipped", last_error: "Podsjetnici su isključeni" });
   }

@@ -2,7 +2,9 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Logo } from "@/components/logo";
+import Link from "next/link";
 import { getSession } from "@/lib/tenant";
+import { isPlatformAdmin } from "@/lib/platform";
 import { OnboardingForm } from "./form";
 
 export const metadata: Metadata = { title: "Novi salon" };
@@ -24,5 +26,15 @@ async function Gate() {
   const s = await getSession();
   if (!s.user) redirect("/prijava");
   if (s.tenant) redirect("/app");
-  return <OnboardingForm />;
+  const admin = await isPlatformAdmin();
+  return (
+    <>
+      {admin && (
+        <Link href="/admin" className="mb-6 block rounded-2xl bg-brand-soft p-4 text-sm font-semibold text-brand hover:underline">
+          Administrator ste platforme – otvori pregled svih salona
+        </Link>
+      )}
+      <OnboardingForm />
+    </>
+  );
 }

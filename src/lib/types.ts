@@ -27,6 +27,8 @@ export interface Tenant {
   send_confirmation: boolean;
   quiet_start: string;
   quiet_end: string;
+  suspended: boolean;
+  suspended_reason: string | null;
   created_at: string;
 }
 

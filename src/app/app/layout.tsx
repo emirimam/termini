@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ExternalLink, LogOut } from "lucide-react";
+import { ExternalLink, LogOut, ShieldCheck } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { requireTenant } from "@/lib/tenant";
+import { isPlatformAdmin } from "@/lib/platform";
 import { signOut } from "../(auth)/actions";
 import { BottomNav, SideNav } from "./nav";
 
@@ -26,16 +27,37 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Suspense>
         </div>
       </aside>
-      <div className="min-w-0 pb-24 md:pb-0">{children}</div>
+      <div className="min-w-0 pb-24 md:pb-0">
+        <Suspense fallback={null}>
+          <SuspendedNotice />
+        </Suspense>
+        {children}
+      </div>
       <BottomNav />
     </div>
   );
 }
 
+async function SuspendedNotice() {
+  const { tenant } = await requireTenant();
+  if (!tenant.suspended) return null;
+  return (
+    <div role="alert" className="bg-danger-soft px-4 py-3 text-sm md:px-6">
+      <strong className="text-danger">Online zakazivanje i podsjetnici su privremeno zaustavljeni.</strong>{" "}
+      {tenant.suspended_reason ?? "Za više informacija javite se podršci Terminija."}
+    </div>
+  );
+}
+
 async function TenantCard() {
-  const { tenant, user } = await requireTenant();
+  const [{ tenant, user }, platformAdmin] = await Promise.all([requireTenant(), isPlatformAdmin()]);
   return (
     <div className="space-y-1 rounded-2xl bg-surface-2 p-3">
+      {platformAdmin && (
+        <Link href="/admin" className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-brand hover:underline">
+          <ShieldCheck className="size-3.5" aria-hidden /> Admin platforme
+        </Link>
+      )}
       <p className="truncate font-semibold">{tenant.name}</p>
       <p className="truncate text-xs text-muted">{user.email}</p>
       <div className="flex items-center justify-between pt-2">

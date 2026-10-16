@@ -1,9 +1,59 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { env } from "@/lib/env";
+import { jsonLdString } from "@/lib/seo";
+
+const FAQ: [string, string][] = [
+  [
+    "Da li klijenti moraju instalirati aplikaciju?",
+    "Ne. Klijent otvori link vašeg salona u browseru na telefonu, izabere uslugu, osobu i vrijeme, upiše ime i broj mobitela. Registracija nije potrebna.",
+  ],
+  [
+    "Kako stižu potvrde i podsjetnici?",
+    "Potvrda stiže odmah nakon zakazivanja, a podsjetnik dan ranije i dva sata prije termina (vremena birate sami). Poruka ide na WhatsApp, a ako klijent nema WhatsApp, šalje se SMS.",
+  ],
+  [
+    "Šta ako klijent ne može doći?",
+    "U poruci ima dugme za otkazivanje ili promjenu termina. Otkazani termin se odmah oslobađa za druge klijente, a vi određujete do kada je online otkazivanje moguće.",
+  ],
+  [
+    "Može li više frizera ili doktora raditi u istom salonu?",
+    "Da. Svaka osoba ima svoje radno vrijeme, pauze, odsustva i usluge koje radi. Klijent bira osobu ili prvu slobodnu, a kalendar prikazuje sve kolone jednu do druge.",
+  ],
+  [
+    "Mogu li prebaciti postojeće klijente?",
+    "Možete uvesti kontakte iz Excela (CSV), Google kontakata ili telefona (.vcf). Brojevi se automatski pretvaraju u ispravan format, a duplikati se preskaču.",
+  ],
+  [
+    "Da li je moguće dvostruko zakazivanje?",
+    "Nije. Sistem ne dozvoljava dva termina kod iste osobe u isto vrijeme, čak ni kad dva klijenta zakazuju u istoj sekundi.",
+  ],
+];
+
 
 export default function Home() {
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "Termini",
+      url: env.appUrl,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      inLanguage: "bs",
+      description:
+        "Online zakazivanje termina za frizerske salone, brijačnice, kozmetičare i stomatološke ordinacije, s podsjetnicima na WhatsApp i SMS.",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "BAM" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+    },
+  ];
   return (
     <div className="min-h-dvh">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 md:px-8">
         <Logo />
         <nav className="flex items-center gap-2">
@@ -99,6 +149,23 @@ export default function Home() {
               </div>
             ))}
           </dl>
+        </section>
+
+        <section className="mx-auto max-w-3xl px-4 pb-20 md:px-8" aria-labelledby="pitanja">
+          <h2 id="pitanja" className="font-display text-3xl font-bold">Česta pitanja</h2>
+          <div className="mt-6 divide-y divide-line rounded-2xl border border-line bg-surface">
+            {FAQ.map(([q, a]) => (
+              <details key={q} className="group px-5 py-4">
+                <summary className="cursor-pointer list-none font-semibold marker:hidden">
+                  <span className="flex items-center justify-between gap-4">
+                    {q}
+                    <span aria-hidden className="text-muted transition-transform group-open:rotate-45">+</span>
+                  </span>
+                </summary>
+                <p className="mt-2 text-muted">{a}</p>
+              </details>
+            ))}
+          </div>
         </section>
 
         <section className="mx-auto max-w-6xl px-4 pb-24 md:px-8">

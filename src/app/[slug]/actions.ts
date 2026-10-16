@@ -21,7 +21,7 @@ import type { Slot } from "@/lib/availability";
 
 async function resolve(slug: string, serviceId: string, staffId: string) {
   const tenant = await getTenantBySlug(slug);
-  if (!tenant || !tenant.online_booking_enabled) return null;
+  if (!tenant || !tenant.online_booking_enabled || tenant.suspended) return null;
   const catalog = await getCatalog(tenant);
   const service = catalog.services.find((s) => s.id === serviceId);
   if (!service) return null;

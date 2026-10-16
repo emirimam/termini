@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MapPin, Phone } from "lucide-react";
-import { getCatalog, getTenantBySlug } from "@/lib/booking";
+import { getCatalog, getTenantBySlug, getWorkingHours } from "@/lib/booking";
+import { jsonLdString, openingHoursText, tenantJsonLd } from "@/lib/seo";
 import { initials } from "@/lib/format";
 import { BookingFlow } from "./booking-flow";
 
@@ -12,10 +13,21 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const tenant = await getTenantBySlug(slug);
-  if (!tenant) return { title: "Salon nije pronađen" };
+  if (!tenant) return { title: "Salon nije pronađen", robots: { index: false } };
+  const { services } = await getCatalog(tenant);
+  const place = tenant.city ? `, ${tenant.city}` : "";
+  const list = services.slice(0, 4).map((s) => s.name.toLowerCase()).join(", ");
+  const description =
+    tenant.description ??
+    `Zakažite termin online u ${tenant.name}${place}${list ? `: ${list}` : ""}. Izaberite uslugu i slobodno vrijeme, potvrda stiže na WhatsApp ili SMS.`;
+  const title = `${tenant.name}${place} – online zakazivanje termina`;
   return {
-    title: `Zakaži termin – ${tenant.name}`,
-    description: tenant.description ?? `Online zakazivanje termina u ${tenant.name}.`,
+    title: { absolute: title },
+    description,
+    alternates: { canonical: `/${tenant.slug}` },
+    openGraph: { type: "website", url: `/${tenant.slug}`, title, description, siteName: "Termini", locale: "bs_BA" },
+    twitter: { card: "summary_large_image", title, description },
+    robots: tenant.slug === "demo-salon" || tenant.suspended ? { index: false, follow: false } : undefined,
   };
 }
 
@@ -31,13 +43,15 @@ async function TenantBooking({ params }: Props) {
   const { slug } = await params;
   const tenant = await getTenantBySlug(slug);
   if (!tenant) notFound();
-  const catalog = await getCatalog(tenant);
+  const [catalog, hours] = await Promise.all([getCatalog(tenant), getWorkingHours(tenant.id)]);
+  const openingHours = openingHoursText(hours);
 
   return (
     <main
       className="mx-auto w-full max-w-xl px-4 pb-28 pt-8 sm:pt-12"
       style={{ ["--brand" as string]: tenant.brand_color, ["--brand-ink" as string]: "#ffffff" }}
     >
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(tenantJsonLd(tenant, catalog.services, hours)) }} />
       <header className="mb-8 flex items-start gap-4">
         <div
           aria-hidden
@@ -65,7 +79,7 @@ async function TenantBooking({ params }: Props) {
         </div>
       </header>
 
-      {!tenant.online_booking_enabled ? (
+      {!tenant.online_booking_enabled || tenant.suspended ? (
         <div className="rounded-2xl border border-line bg-surface p-6">
           <p className="font-semibold">Online zakazivanje je trenutno isključeno.</p>
           <p className="mt-1 text-muted">
@@ -86,6 +100,17 @@ async function TenantBooking({ params }: Props) {
           staff={catalog.staff}
           links={catalog.links}
         />
+      )}
+
+      {openingHours.length > 0 && (
+        <section className="mt-12 rounded-2xl border border-line bg-surface p-5 text-sm">
+          <h2 className="font-display mb-2 font-semibold">Radno vrijeme</h2>
+          <ul className="tabular space-y-0.5 text-muted">
+            {openingHours.map((l) => (
+              <li key={l}>{l}</li>
+            ))}
+          </ul>
+        </section>
       )}
 
       <footer className="mt-16 text-center text-xs text-muted">
