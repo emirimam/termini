@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Termini
 
-## Getting Started
+Multitenant platforma za online zakazivanje termina kod frizera, brijačnica,
+kozmetičara i stomatologa, s potvrdama i podsjetnicima na **WhatsApp** i **SMS**.
 
-First, run the development server:
+- Javna stranica salona: `/{slug}` – klijent bira uslugu → osobu → termin → podatke, bez registracije
+- Upravljanje terminom iz poruke: `/t/{token}` – potvrda, otkazivanje, pomjeranje, dodavanje u kalendar
+- Panel salona: `/app` – dnevni kalendar po osobama, klijenti (uvoz CSV/vCard), usluge, tim i radno vrijeme, poruke, postavke s QR kodom
+
+## Tehnologija
+
+Next.js 16 (App Router, Cache Components) · Supabase (Postgres + Auth + RLS) · Tailwind CSS 4 · Vercel
+
+## Kako radi multitenancy
+
+Svaka tabela ima `tenant_id`. Prijavljeni korisnici rade preko Row Level Security
+politika (`is_member`, `is_admin`), pa salon nikad ne vidi tuđe podatke. Javna
+rezervacija i linkovi iz poruka idu isključivo preko servera (service role) –
+anonimni korisnik nema direktan pristup bazi. Preklapanje termina iste osobe
+blokira sama baza (`exclude using gist`), pa ni istovremene rezervacije ne mogu
+napraviti dupli termin.
+
+## Podsjetnici
+
+1. Pri zakazivanju se u `reminder_jobs` upišu poslovi: potvrda odmah + podsjetnici
+   (podrazumijevano 24 h i 2 h prije; salon bira u postavkama).
+2. Podsjetnik koji pada u tihe sate (podrazumijevano 21–08 h) pomjera se ranije.
+3. `pg_cron` svakih 5 minuta poziva `/api/cron/reminders` (vidi `supabase/cron.sql`).
+4. Poruka ide na WhatsApp (odobreni šablon); ako WhatsApp vrati grešku ili webhook
+   javi neuspjelu isporuku, šalje se SMS.
+5. Odgovori klijenata (*Dolazim* / *Otkaži termin*) stižu na `/api/webhooks/whatsapp`.
+
+Bez podešenih kanala aplikacija radi u **probnom režimu**: poruke se samo upisuju u
+dnevnik (`/app/poruke`).
+
+## Lokalni razvoj
 
 ```bash
+cp .env.example .env.local   # dopuniti SUPABASE_SERVICE_ROLE_KEY
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm test                     # testovi logike termina, podsjetnika i uvoza
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Postavljanje u produkciju
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Supabase** – migracije iz `supabase/migrations` (već primijenjene na projekat).
+   U *Authentication → URL Configuration* postaviti *Site URL* na adresu aplikacije i
+   dodati `https://VAŠ-DOMEN/auth/callback` u *Redirect URLs*.
+2. **Vercel** – varijable okruženja iz `.env.example`. `CRON_SECRET` generisati npr.
+   s `openssl rand -hex 32`.
+3. **Cron** – pokrenuti `supabase/cron.sql` (s pravim URL-om i tajnom).
+4. **WhatsApp** – u Meta developer konzoli: WhatsApp Business nalog, broj telefona,
+   trajni token (System User), šabloni iz `docs/whatsapp-sabloni.md`, webhook
+   `https://VAŠ-DOMEN/api/webhooks/whatsapp` s `WHATSAPP_VERIFY_TOKEN`, pretplata na `messages`.
+5. **SMS** – Infobip (`SMS_PROVIDER=infobip`, `INFOBIP_BASE_URL`, `INFOBIP_API_KEY`)
+   ili Twilio. Za BiH je alfanumerički pošiljalac (npr. `Termini`) uglavnom potrebno registrovati kod providera.
+6. Isključiti `MESSAGING_DRY_RUN`.

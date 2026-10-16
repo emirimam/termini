@@ -1,26 +1,243 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Termini – vizuelni sistem
+   Hladna "porculanska" podloga, duboka tinta, teal kao boja salona (svaki
+   salon može imati svoju) i šafran rezervisan isključivo za izabrani termin. */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  --paper: #f3f6f7;
+  --surface: #ffffff;
+  --surface-2: #eaeff1;
+  --ink: #13212e;
+  --muted: #5b6875;
+  --line: #dde4e8;
+  --brand: #0f6b5c;
+  --brand-ink: #ffffff;
+  --brand-soft: color-mix(in oklab, var(--brand) 12%, var(--surface));
+  --stub: #f4b93e;
+  --stub-ink: #2a1d00;
+  --danger: #b4232c;
+  --danger-soft: #fbeaea;
+  --ok: #1e7f4f;
+  --ok-soft: #e4f4ec;
+  --warn-soft: #fdf3dc;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --paper: #0d1419;
+    --surface: #141d24;
+    --surface-2: #1b262e;
+    --ink: #e6ecef;
+    --muted: #93a1ac;
+    --line: #26333c;
+    --brand: #39b89f;
+    --brand-ink: #062720;
+    --stub: #f4c25a;
+    --stub-ink: #2a1d00;
+    --danger: #f07a80;
+    --danger-soft: #3a1c1f;
+    --ok: #5fd39a;
+    --ok-soft: #16302a;
+    --warn-soft: #33290f;
+    color-scheme: dark;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-stub: var(--stub);
+  --color-stub-ink: var(--stub-ink);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn-soft: var(--warn-soft);
+  --font-sans: "Figtree Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "Figtree Variable", ui-sans-serif, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01";
+  line-height: 1.5;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Kontrole forme */
+.field {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+  font-size: 1rem;
+  transition: border-color 0.15s;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand) 22%, transparent);
+}
+.field::placeholder {
+  color: color-mix(in oklab, var(--muted) 75%, transparent);
+}
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+.hint {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.7rem 1.25rem;
+  font-weight: 650;
+  font-size: 0.95rem;
+  transition: background 0.15s, transform 0.08s, opacity 0.15s;
+  white-space: nowrap;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.btn-primary {
+  background: var(--brand);
+  color: var(--brand-ink);
+}
+.btn-primary:hover {
+  background: color-mix(in oklab, var(--brand) 88%, black);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.btn-ghost:hover {
+  background: var(--surface-2);
+}
+.btn-danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.btn-sm {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+/* Karta termina ("ulaznica") – perforirana ivica između gornjeg i donjeg dijela */
+.ticket {
+  position: relative;
+  background: var(--surface);
+  border-radius: 20px;
+  border: 1px solid var(--line);
+}
+.ticket-perf {
+  position: relative;
+  height: 0;
+  border-top: 2px dashed var(--line);
+  margin: 0 18px;
+}
+.ticket-perf::before,
+.ticket-perf::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.ticket-perf::before {
+  left: -30px;
+  clip-path: inset(0 0 0 50%);
+}
+.ticket-perf::after {
+  right: -30px;
+  clip-path: inset(0 50% 0 0);
+}
+
+/* Izbor termina: šafran je jedini "glasan" element u cijelom proizvodu */
+.slot {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 0.65rem 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  transition: background 0.12s, border-color 0.12s;
+}
+.slot:hover {
+  border-color: var(--ink);
+}
+.slot[aria-pressed="true"] {
+  background: var(--stub);
+  border-color: var(--stub);
+  color: var(--stub-ink);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
