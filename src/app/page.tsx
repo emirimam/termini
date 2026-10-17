@@ -3,6 +3,7 @@ import { ArrowRight, Check, CheckCheck } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { env } from "@/lib/env";
 import { jsonLdString } from "@/lib/seo";
+import { PROMO_VIDEO, promoVideoJsonLd } from "@/lib/promo-video";
 
 const FAQ: [string, string][] = [
   [
@@ -113,6 +114,7 @@ export default function Home() {
       "@type": "FAQPage",
       mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
     },
+    promoVideoJsonLd(),
   ];
 
   return (
@@ -125,6 +127,7 @@ export default function Home() {
             <Logo />
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-medium text-muted md:flex" aria-label="Sekcije">
+            <a href="#video" className="hover:text-ink">Video</a>
             <a href="#kako" className="hover:text-ink">Kako radi</a>
             <a href="#za-koga" className="hover:text-ink">Za koga</a>
             <a href="#pitanja" className="hover:text-ink">Pitanja</a>
@@ -172,6 +175,39 @@ export default function Home() {
             </div>
 
             <HeroVisual />
+          </div>
+        </section>
+
+        {/* VIDEO */}
+        <section id="video" className="scroll-mt-20 px-4 pb-20 md:px-8 lg:pb-24" aria-labelledby="video-naslov">
+          <div className="mx-auto max-w-5xl">
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h2 id="video-naslov" className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                  Termini za 46 sekundi
+                </h2>
+                <p className="mt-2 max-w-xl text-muted">
+                  Kako klijent zakaže sam, kako stiže podsjetnik na WhatsApp i SMS i kako se kalendar puni bez telefoniranja.
+                </p>
+              </div>
+            </div>
+            <figure className="overflow-hidden rounded-[1.75rem] bg-ink p-1.5 shadow-[0_40px_80px_-40px_rgba(19,33,46,0.55)] ring-1 ring-line">
+              <video
+                className="block aspect-video w-full rounded-[1.4rem] bg-ink"
+                src={PROMO_VIDEO.src}
+                poster={PROMO_VIDEO.poster}
+                width={PROMO_VIDEO.width}
+                height={PROMO_VIDEO.height}
+                controls
+                playsInline
+                preload="none"
+                aria-label={PROMO_VIDEO.title}
+              >
+                <track kind="captions" src={PROMO_VIDEO.captions} srcLang="bs" label="Bosanski" />
+                <a href={PROMO_VIDEO.src}>Preuzmite promo video (MP4)</a>
+              </video>
+              <figcaption className="sr-only">{PROMO_VIDEO.description}</figcaption>
+            </figure>
           </div>
         </section>
 
