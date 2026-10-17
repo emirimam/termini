@@ -52,6 +52,20 @@ export async function signUp(_prev: AuthState, form: FormData): Promise<AuthStat
   return { info: `Poslali smo link za potvrdu na ${parsed.data.email}. Otvorite ga da nastavite.` };
 }
 
+export async function signInWithGoogle(form: FormData) {
+  const next = safeNext(form.get("next"));
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${env.appUrl}/auth/callback?next=${encodeURIComponent(next)}`,
+      queryParams: { prompt: "select_account" },
+    },
+  });
+  if (error || !data.url) redirect("/prijava?greska=google");
+  redirect(data.url);
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();

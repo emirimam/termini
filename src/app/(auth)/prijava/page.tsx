@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { isGoogleEnabled } from "@/lib/auth-providers";
 import { AuthForm } from "../auth-form";
+import { GoogleButton, OrDivider } from "../google-button";
 
-export const metadata: Metadata = { title: "Prijava" };
+export const metadata: Metadata = { title: "Prijava", robots: { index: false } };
 
 type Props = { searchParams: Promise<{ next?: string; greska?: string }> };
 
@@ -19,13 +21,21 @@ export default function Page({ searchParams }: Props) {
 }
 
 async function LoginWithParams({ searchParams }: Props) {
-  const { next, greska } = await searchParams;
+  const [{ next, greska }, google] = await Promise.all([searchParams, isGoogleEnabled()]);
   return (
     <>
       {greska && (
         <p className="mb-4 rounded-xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger">
-          Link za prijavu je istekao ili nije ispravan. Prijavite se ponovo.
+          {greska === "google"
+            ? "Prijava preko Googlea trenutno nije dostupna. Prijavite se emailom."
+            : "Link za prijavu je istekao ili nije ispravan. Prijavite se ponovo."}
         </p>
+      )}
+      {google && (
+        <>
+          <GoogleButton next={next} />
+          <OrDivider />
+        </>
       )}
       <AuthForm mode="login" next={next} />
     </>

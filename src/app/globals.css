@@ -241,3 +241,80 @@ body {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* ---------------------------------------------------------------------------
+   Početna stranica: uvijek svijetla podloga s tamnim "tinta" sekcijama,
+   bez obzira na sistemsku temu – prodajna stranica izgleda isto svima.
+   --------------------------------------------------------------------------- */
+.landing {
+  --paper: #f3f6f7;
+  --surface: #ffffff;
+  --surface-2: #e7edf0;
+  --ink: #13212e;
+  --muted: #56636f;
+  --line: #d9e1e6;
+  --brand: #0f6b5c;
+  --brand-ink: #ffffff;
+  --stub: #f4b93e;
+  --stub-ink: #2a1d00;
+  color-scheme: light;
+  background: var(--paper);
+  color: var(--ink);
+}
+.landing .on-ink {
+  --muted: #9fb0bd;
+  --line: #2a3b4a;
+  --surface: #1a2a38;
+  --surface-2: #213343;
+}
+
+.hero-title {
+  font-size: clamp(2.6rem, 6vw, 4.9rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+/* Tačkasta mreža iza telefona – podsjeća na kalendarsku mrežu */
+.dot-grid {
+  background-image: radial-gradient(color-mix(in oklab, var(--ink) 18%, transparent) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+
+.phone {
+  border-radius: 2.6rem;
+  border: 10px solid var(--ink);
+  background: var(--surface);
+  box-shadow:
+    0 40px 80px -30px rgba(19, 33, 46, 0.45),
+    0 0 0 1px rgba(19, 33, 46, 0.08);
+}
+
+/* Jedan orkestrirani trenutak pri učitavanju: klijent bira termin,
+   pojavljuje se potvrda, pa stiže WhatsApp podsjetnik. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-pick {
+    animation: hero-pick 0.5s ease-out 0.9s both;
+  }
+  @keyframes hero-pick {
+    from {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+  }
+  .hero-pop {
+    animation: hero-pop 0.55s cubic-bezier(0.2, 0.8, 0.2, 1.15) both;
+  }
+  @keyframes hero-pop {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.96);
+    }
+  }
+  .delay-1 {
+    animation-delay: 1.5s;
+  }
+  .delay-2 {
+    animation-delay: 2.2s;
+  }
+}
