@@ -254,7 +254,10 @@ export function BookingFlow({ slug, tenantName, timezone, services, staff, links
                 onChange={(e) => setConsent(e.target.checked)}
                 className="mt-0.5 size-5 shrink-0 accent-[var(--brand)]"
               />
-              <span>Pošaljite mi potvrdu i podsjetnike na WhatsApp ili SMS.</span>
+              <span>
+                Pošaljite mi potvrdu i podsjetnike na WhatsApp ili SMS.{" "}
+                <a href="/privatnost" target="_blank" className="text-muted underline">Privatnost</a>
+              </span>
             </label>
           </div>
 

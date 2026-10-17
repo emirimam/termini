@@ -9,6 +9,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base: MetadataRoute.Sitemap = [
     { url: env.appUrl, changeFrequency: "weekly", priority: 1 },
     { url: `${env.appUrl}/registracija`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${env.appUrl}/privatnost`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${env.appUrl}/uslovi`, changeFrequency: "yearly", priority: 0.3 },
   ];
   try {
     const { data } = await adminClient()

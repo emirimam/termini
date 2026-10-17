@@ -339,6 +339,8 @@ export default function Home() {
             <Link href="/demo-salon" className="hover:text-ink">Demo salon</Link>
             <Link href="/prijava" className="hover:text-ink">Prijava za salone</Link>
             <Link href="/registracija" className="hover:text-ink">Registracija</Link>
+            <Link href="/privatnost" className="hover:text-ink">Privatnost</Link>
+            <Link href="/uslovi" className="hover:text-ink">Uslovi korištenja</Link>
           </nav>
         </div>
       </footer>

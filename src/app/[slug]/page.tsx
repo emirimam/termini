@@ -115,6 +115,8 @@ async function TenantBooking({ params }: Props) {
 
       <footer className="mt-16 text-center text-xs text-muted">
         Zakazivanje pokreće <Link href="/" className="underline-offset-2 hover:underline">Termini</Link>
+        {" · "}
+        <Link href="/privatnost" className="underline-offset-2 hover:underline">Privatnost</Link>
       </footer>
     </main>
   );

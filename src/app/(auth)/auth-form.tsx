@@ -45,6 +45,14 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
         {mode === "login" ? "Prijavi se" : "Napravi nalog"}
       </button>
 
+      {mode === "signup" && (
+        <p className="text-center text-xs text-muted">
+          Registracijom prihvatate{" "}
+          <Link href="/uslovi" className="underline hover:text-ink">Uslove korištenja</Link> i{" "}
+          <Link href="/privatnost" className="underline hover:text-ink">Politiku privatnosti</Link>.
+        </p>
+      )}
+
       <p className="text-center text-sm text-muted">
         {mode === "login" ? (
           <>
